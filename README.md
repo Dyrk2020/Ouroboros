@@ -1,96 +1,31 @@
-# Serpentine
+# Ouroboros
 
-A snake game written in [Rust](https://www.rust-lang.org/) with the [Bevy](https://bevy.org) engine (0.11) — formerly known as *bevy-snake*. Unlike the classic grid-based snake, movement here is **continuous and free-form**: you steer the head in any direction, and the body follows via a linked chain of entities.
+A snake game in [Rust](https://www.rust-lang.org/) with [Bevy](https://bevy.org) 0.11 — formerly known as *bevy-snake*. Forget the grid: movement here is **continuous and free-form**. Steer the head in any direction and the body follows as a chain of linked entities.
 
-Two snakes share the arena: the one you control (spawned at the center) and an AI snake that wanders randomly. Eat apples to grow, and avoid running into the other snake's body — a collision plays a death sound and takes your head off.
-
-<!-- TODO: screenshot — drop a `docs/screenshot.png` and uncomment:
-<p align="center">
-  <img src="docs/screenshot.png" width="480" alt="Serpentine gameplay screenshot">
-</p>
--->
+Two snakes share the arena: yours (spawned at the center) and an AI snake that wanders around. Eat apples to grow, and dodge the other snake's body — a collision plays a death sound and takes your head off.
 
 ## Features
 
-- **Free-form snake movement** — steer in any direction (not locked to a grid), simulated on a fixed 50 Hz timestep with the camera following your head.
-- **Three input methods**, all active simultaneously while in game:
-  - **Keyboard** — WASD or arrow keys.
-  - **Mouse** — the snake steers toward the cursor position relative to the window center.
-  - **Gamepad** — left stick steering; the first connected gamepad is picked up automatically.
-- **Menu state machine** — `Menu` / `InGame` / `Options` game states; the menu supports start/continue and exit (the Options screen is a work-in-progress stub).
-- **Audio** — looping background music on game start, an eat sound when an apple is consumed, and a death sound on collision (via `bevy_kira_audio`).
-- **Plugin-based architecture** — the game is assembled from independent Bevy plugins: `MenuPlugin`, `SnakePlugin` (which itself registers `ControllerPlugin`).
-- **Built-in debugging** — `bevy-inspector-egui` world inspector available in-game.
+- **Free-form movement** — no grid lock; simulated on a fixed 50 Hz timestep with the camera following your head.
+- **Three inputs, all live at once** — keyboard (WASD/arrows), mouse (steer toward the cursor), and gamepad (left stick, first connected pad picked up automatically). The last one you touch sets the direction.
+- **Menu state machine** — start/continue and exit; the Options screen is a work-in-progress stub.
+- **Audio** — looping background music on game start, plus eat and death sounds, via `bevy_kira_audio`.
+- **Plugin-based build** — assembled from independent Bevy plugins (`MenuPlugin`, `SnakePlugin`, `ControllerPlugin`), with a `bevy-inspector-egui` world inspector in-game.
 
-## Controls
+## Quick start
 
-### In the menu
-
-| Key | Action |
-| --- | --- |
-| `S` / `C` | Start / continue game |
-| `O` | Options (stub) |
-| `Esc` | Quit |
-
-### In game
-
-| Input | Action |
-| --- | --- |
-| `W` / `↑` | Steer up |
-| `S` / `↓` | Steer down |
-| `A` / `←` | Steer left |
-| `D` / `→` | Steer right |
-| `Space` / `P` | Back to menu (pause) |
-| Mouse move | Steer toward the cursor |
-| Gamepad left stick | Steer (analog) |
-
-All three control schemes run at once — the last one you touch sets the direction.
-
-## Getting started
-
-Requirements:
-
-- Rust **1.70+** (Bevy 0.11's minimum supported version)
-- On Linux, the usual Bevy system dependencies (`libasound2-dev`, `libudev-dev`, etc. — see the [Bevy setup guide](https://github.com/bevyengine/bevy/blob/main/docs/linux_dependencies.md))
-
-Build and run:
+Requires Rust **1.70+** (Bevy 0.11's minimum). On Linux, install the usual Bevy system dependencies (`libasound2-dev`, `libudev-dev`, etc. — see the [setup guide](https://github.com/bevyengine/bevy/blob/main/docs/linux_dependencies.md)).
 
 ```sh
 cargo run --release
 ```
 
-The first build takes a while; subsequent builds are incremental.
+The first build takes a while; later builds are incremental.
 
-## Project structure
+## Controls
 
-```
-Serpentine/
-├── Cargo.toml
-├── icon.ico / icon.rc            # window icon
-├── assets/
-│   ├── fonts/                    # JetBrainsMono-Bold (menu text)
-│   ├── sounds/                   # bgm.mp3, eat.mp3, dead.wav
-│   ├── textures/                 # snake_head/body, apple, star, border, ball
-│   └── my_project.ldtk           # LDtk level project (asset prepared for future map use)
-└── src/
-    ├── main.rs                   # App entry point
-    └── game/
-        ├── mod.rs                # GamePlugin: window, states, plugin wiring
-        ├── state.rs              # GameState: Menu / InGame / Options
-        ├── events.rs             # GameStart / GamePause / GameOver / SnakeEatApple
-        ├── resources.rs          # Options, gamepad handle, background resources
-        ├── systems.rs            # camera setup, window icon, gamepad hot-plug
-        ├── menu/                 # MenuPlugin: menu UI + key handling
-        └── snake/
-            ├── mod.rs            # SnakePlugin: spawn, fixed-step simulation
-            ├── components.rs     # Head/Body bundles, Next/Previous chain, Apple
-            ├── systems.rs        # movement, eating, apples, collisions, AI snake
-            └── control/          # ControllerPlugin
-                ├── keyboard.rs   # WASD / arrows, pause keys
-                ├── mouse.rs      # cursor-follow steering
-                └── gamepad.rs    # left-stick steering
-```
+In the menu: `S`/`C` start or continue, `O` options (stub), `Esc` quit. In game: WASD/arrows steer, the mouse steers toward the cursor, the gamepad's left stick steers, and `Space`/`P` returns to the menu.
 
 ## License
 
-No license has been chosen yet. All rights reserved until a `LICENSE` file is added.
+No license chosen yet — all rights reserved until a `LICENSE` file is added.
